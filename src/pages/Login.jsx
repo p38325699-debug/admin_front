@@ -9,9 +9,13 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
+if (email === "admin@gmail.com" && password === "admin123") {
+     // Save login session
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("loginTime", Date.now());
 
-    if (email === "admin@gmail.com" && password === "admin123") {
-      navigate("/dashboard"); // ✅ Redirect
+      // Redirect to dashboard
+      navigate("/dashboard");
     } else {
       setError("Invalid email or password");
     }
