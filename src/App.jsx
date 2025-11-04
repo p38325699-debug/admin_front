@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import UserTable from "./pages/UserTable";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+
 import HomeData from "./pages/HomeData";
 import TaskData from "./pages/TaskData";
 import QuizForm from "./pages/quiz_form";
@@ -20,6 +21,7 @@ import CryptoPay from "./pages/CryptoPay";
 import GoldMembers from "./pages/GoldMembers";
 import PlanPurchases from "./pages/PlanPurchases";
 import RefRedirect from "./pages/RefRedirect";
+import ContactMsg from "./pages/ContactMsg";
 
 const AppLayout = () => {
   const location = useLocation();
@@ -68,6 +70,7 @@ const AppLayout = () => {
             <Route path="/gold-members" element={<ProtectedRoute element={<GoldMembers />} />} />
             <Route path="/plan-purchases" element={<ProtectedRoute element={<PlanPurchases />} />} />
             <Route path="/referral" element={<ProtectedRoute element={<RefRedirect />} />} />
+            <Route path="/contact-msg" element={<ProtectedRoute element={<ContactMsg/>} />} />
 
             {/* Default fallback */}
             <Route path="*" element={<ProtectedRoute element={<Dashboard />} />} />

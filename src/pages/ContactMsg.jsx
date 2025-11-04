@@ -6,7 +6,7 @@ import {
   FaEnvelope, 
   FaUser, 
   FaClock, 
-  FaSearch,
+  FaSearch, 
   FaFilter,
   FaTimes
 } from "react-icons/fa";
