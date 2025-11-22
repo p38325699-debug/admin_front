@@ -16,7 +16,9 @@ import {
   FaMoneyBillWave,
   FaCheck,
   FaTimes,
-  FaRupeeSign
+  FaRupeeSign,
+  FaFileAlt,
+  FaCode
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -189,6 +191,146 @@ export default function PaymentPage() {
     }
   };
 
+  // ✅ NEW: Show raw OCR data in pop-up
+  const handleViewRawData = (item) => {
+    const rawData = {
+      ocr_raw: item.ocr_raw || "No OCR data available",
+      img_hash: item.img_hash || "No image hash",
+      utr_number: item.utr_number || "No UTR",
+      amount: item.amount || "No amount",
+      method: item.method || "No method",
+      status: item.status || "No status",
+      payment_date: item.payment_date || "No date"
+    };
+
+    Swal.fire({
+      title: "📄 Raw Transaction Data",
+      html: `
+        <div class="text-left">
+          <div class="mb-4">
+            <h3 class="text-sm font-bold text-violet-400 mb-2">OCR Extracted Text:</h3>
+            <div class="bg-gray-800 p-3 rounded border border-gray-600 max-h-32 overflow-y-auto">
+              <pre class="text-xs text-gray-300 whitespace-pre-wrap">${rawData.ocr_raw}</pre>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span class="text-gray-400">Image Hash:</span>
+              <div class="text-gray-300 font-mono truncate" title="${rawData.img_hash}">${rawData.img_hash}</div>
+            </div>
+            <div>
+              <span class="text-gray-400">UTR Number:</span>
+              <div class="text-gray-300">${rawData.utr_number}</div>
+            </div>
+            <div>
+              <span class="text-gray-400">Amount:</span>
+              <div class="text-gray-300">$${rawData.amount}</div>
+            </div>
+            <div>
+              <span class="text-gray-400">Method:</span>
+              <div class="text-gray-300">${rawData.method}</div>
+            </div>
+            <div>
+              <span class="text-gray-400">Status:</span>
+              <div class="text-gray-300">${rawData.status}</div>
+            </div>
+            <div>
+              <span class="text-gray-400">Date:</span>
+              <div class="text-gray-300">${new Date(rawData.payment_date).toLocaleString()}</div>
+            </div>
+          </div>
+        </div>
+      `,
+      width: 700,
+      background: '#1f2937',
+      color: 'white',
+      showCloseButton: true,
+      showConfirmButton: false,
+      customClass: {
+        popup: 'rounded-lg',
+        title: 'text-lg font-bold'
+      }
+    });
+  };
+
+  // ✅ NEW: Show detailed transaction info
+  const handleViewDetails = (item) => {
+    Swal.fire({
+      title: "🔍 Transaction Details",
+      html: `
+        <div class="text-left space-y-3">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <span class="text-gray-400 text-sm">User:</span>
+              <div class="text-white font-medium">${item.full_name || `User ${item.user_id}`}</div>
+            </div>
+            <div>
+              <span class="text-gray-400 text-sm">Email:</span>
+              <div class="text-white">${item.email}</div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <span class="text-gray-400 text-sm">Amount:</span>
+              <div class="text-green-400 font-bold">$${parseFloat(item.amount).toFixed(2)}</div>
+            </div>
+            <div>
+              <span class="text-gray-400 text-sm">Method:</span>
+              <div class="text-blue-400 font-medium">${item.method}</div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <span class="text-gray-400 text-sm">UTR:</span>
+              <div class="text-yellow-400 font-mono">${item.utr_number || 'N/A'}</div>
+            </div>
+            <div>
+              <span class="text-gray-400 text-sm">Due Status:</span>
+              <div class="${item.due ? 'text-green-400' : 'text-red-400'} font-medium">
+                ${item.due ? 'Not Due' : 'Due'}
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <span class="text-gray-400 text-sm">Payment Date:</span>
+            <div class="text-white">${new Date(item.payment_date).toLocaleString()}</div>
+          </div>
+          
+          ${item.ocr_raw ? `
+            <div>
+              <span class="text-gray-400 text-sm">OCR Preview:</span>
+              <div class="bg-gray-800 p-2 rounded border border-gray-600 mt-1 max-h-20 overflow-y-auto">
+                <pre class="text-xs text-gray-300 whitespace-pre-wrap">${item.ocr_raw.substring(0, 200)}${item.ocr_raw.length > 200 ? '...' : ''}</pre>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `,
+      width: 600,
+      background: '#1f2937',
+      color: 'white',
+      showCloseButton: true,
+      showConfirmButton: true,
+      confirmButtonText: 'View Raw Data',
+      showDenyButton: true,
+      denyButtonText: 'View Screenshot',
+      customClass: {
+        popup: 'rounded-lg',
+        title: 'text-lg font-bold'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleViewRawData(item);
+      } else if (result.isDenied) {
+        handleViewScreenshot(item.id);
+      }
+    });
+  };
+
   const getStatusIcon = (status) => {
     switch (status) {
       case "completed":
@@ -276,12 +418,10 @@ export default function PaymentPage() {
               </div>
               <div>
                 <p className="text-gray-400 text-xs">Total Amount</p>
-                <p className="text-white font-bold text-sm">₹{stats.totalAmount.toFixed(2)}</p>
+                <p className="text-white font-bold text-sm">${stats.totalAmount.toFixed(2)}</p>
               </div>
             </div>
           </div>
-
-         
 
           <div className="bg-[#1f1f1f] rounded-lg p-3 border border-gray-700">
             <div className="flex items-center gap-2">
@@ -357,18 +497,18 @@ export default function PaymentPage() {
           />
         </div>
         
-<div>
-  <label className="text-gray-300 text-xs mb-1 block">Due</label>
-  <select
-    value={filters.due}
-    onChange={(e) => setFilters({ ...filters, due: e.target.value })}
-    className="w-full bg-[#2a2a2a] border border-gray-600 text-white px-3 py-2 rounded-lg focus:outline-none focus:border-violet-500 text-sm"
-  >
-    <option value="all">All Due</option>
-    <option value="true">Not Due</option>
-    <option value="false">Due</option>
-  </select>
-</div>
+        <div>
+          <label className="text-gray-300 text-xs mb-1 block">Due</label>
+          <select
+            value={filters.due}
+            onChange={(e) => setFilters({ ...filters, due: e.target.value })}
+            className="w-full bg-[#2a2a2a] border border-gray-600 text-white px-3 py-2 rounded-lg focus:outline-none focus:border-violet-500 text-sm"
+          >
+            <option value="all">All Due</option>
+            <option value="true">Not Due</option>
+            <option value="false">Due</option>
+          </select>
+        </div>
 
         <div>
           <label className="text-gray-300 text-xs mb-1 block">Method</label>
@@ -420,9 +560,8 @@ export default function PaymentPage() {
                   <th className="px-4 py-2 text-left font-semibold">Method</th>
                   <th className="px-4 py-2 text-left font-semibold">UTR</th>
                   <th className="px-4 py-2 text-left font-semibold">Due</th>
-                  {/* <th className="px-4 py-2 text-left font-semibold">Status</th> */}
                   <th className="px-4 py-2 text-left font-semibold">Date</th>
-                  <th className="px-4 py-2 text-left font-semibold">Proof</th>
+                  <th className="px-4 py-2 text-left font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -477,12 +616,6 @@ export default function PaymentPage() {
                           <option value="true" className="bg-[#1f1f1f]">Not Due</option>
                         </select>
                       </td>
-                      {/* <td className="px-4 py-2">
-                        <div className={`flex items-center gap-1 px-2 py-1 rounded border ${getStatusColor(item.status)}`}>
-                          {getStatusIcon(item.status)}
-                          <span className="font-medium capitalize text-xs">{item.status}</span>
-                        </div>
-                      </td> */}
                       <td className="px-4 py-2">
                         <div className="flex items-center gap-1 text-gray-400">
                           <FaCalendar className="text-xs" />
@@ -492,19 +625,35 @@ export default function PaymentPage() {
                         </div>
                       </td>
                       <td className="px-4 py-2">
-                        <button
-                          onClick={() => handleViewScreenshot(item.id)}
-                          className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs transition"
-                        >
-                          <FaEye size={10} />
-                          View
-                        </button>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleViewDetails(item)}
+                            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs transition"
+                            title="View Details"
+                          >
+                            <FaEye size={10} />
+                          </button>
+                          <button
+                            onClick={() => handleViewScreenshot(item.id)}
+                            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs transition"
+                            title="View Screenshot"
+                          >
+                            <FaFileAlt size={10} />
+                          </button>
+                          <button
+                            onClick={() => handleViewRawData(item)}
+                            className="flex items-center gap-1 bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded text-xs transition"
+                            title="View Raw Data"
+                          >
+                            <FaCode size={10} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={9} className="px-4 py-6 text-center text-gray-400">
+                    <td colSpan={8} className="px-4 py-6 text-center text-gray-400">
                       <div className="flex flex-col items-center justify-center">
                         <FaMoneyBillWave className="text-2xl mb-2 opacity-50" />
                         <p className="text-sm font-medium">No wallet transactions found</p>

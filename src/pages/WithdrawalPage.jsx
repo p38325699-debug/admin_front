@@ -224,7 +224,7 @@ const WithdrawalPage = () => {
               </div>
               <div>
                 <p className="text-gray-400 text-xs">Total Amount</p>
-                <p className="text-white font-bold text-sm">₹{stats.totalAmount.toFixed(2)}</p>
+                <p className="text-white font-bold text-sm">${stats.totalAmount.toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -376,7 +376,7 @@ const WithdrawalPage = () => {
                       {/* Amount */}
                       <td className="px-4 py-2">
                         <span className="font-bold text-white text-sm">
-                          ₹{parseFloat(withdrawal.amount).toFixed(2)}
+                          ${parseFloat(withdrawal.amount).toFixed(2)}
                         </span>
                       </td>
 
@@ -496,7 +496,7 @@ const MethodDetailsPopup = ({ withdrawal, onClose }) => {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="text-gray-400">Amount:</span>
-                <p className="text-white font-semibold">₹{parseFloat(withdrawal.amount).toFixed(2)}</p>
+                <p className="text-white font-semibold">${parseFloat(withdrawal.amount).toFixed(2)}</p>
               </div>
               <div>
                 <span className="text-gray-400">Status:</span>

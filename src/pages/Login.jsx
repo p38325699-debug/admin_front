@@ -9,7 +9,7 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-if (email === "admin@gmail.com" && password === "admin123") {
+if (email === "knovo0301@gmail.com" && password === "git_123") {
      // Save login session
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("loginTime", Date.now());
@@ -70,9 +70,6 @@ if (email === "admin@gmail.com" && password === "admin123") {
           </button>
         </form>
 
-        {/* <p className="text-center text-gray-500 text-sm mt-6">
-          Default credentials: <span className="text-gray-300">admin@gmail.com</span> / <span className="text-gray-300">admin123</span>
-        </p> */}
       </div>
     </div>
   );

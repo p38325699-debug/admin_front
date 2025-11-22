@@ -22,6 +22,7 @@ import GoldMembers from "./pages/GoldMembers";
 import PlanPurchases from "./pages/PlanPurchases";
 import RefRedirect from "./pages/RefRedirect";
 import ContactMsg from "./pages/ContactMsg";
+import AdminCronPanel from "./pages/AdminCronPanel";
 
 const AppLayout = () => {
   const location = useLocation();
@@ -71,6 +72,7 @@ const AppLayout = () => {
             <Route path="/plan-purchases" element={<ProtectedRoute element={<PlanPurchases />} />} />
             <Route path="/referral" element={<ProtectedRoute element={<RefRedirect />} />} />
             <Route path="/contact-msg" element={<ProtectedRoute element={<ContactMsg/>} />} />
+            <Route path="/admin/cron-jobs" element={<ProtectedRoute element={<AdminCronPanel/>} />} />
 
             {/* Default fallback */}
             <Route path="*" element={<ProtectedRoute element={<Dashboard />} />} />

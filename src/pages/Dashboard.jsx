@@ -7,7 +7,9 @@ import {
   FaHistory, 
   FaBell,
   FaQrcode,
-  FaTasks
+  FaTasks,
+  FaCog,
+  FaPlayCircle
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -94,6 +96,13 @@ const Dashboard = () => {
       icon: <FaBell className="text-lg" />,
       path: "/notifications",
       color: "from-red-500 to-red-600"
+    },
+    {
+      title: "Cron Jobs",
+      description: "Manual system tasks and maintenance",
+      icon: <FaPlayCircle className="text-lg" />,
+      path: "/admin/cron-jobs",
+      color: "from-orange-500 to-orange-600"
     }
   ];
 
@@ -109,7 +118,8 @@ const Dashboard = () => {
     <div className="h-screen flex flex-col bg-gradient-to-br from-gray-900 to-black">
       {/* Header - Fixed */}
       <div className="flex-shrink-0 p-4 pb-2">
-        <h1 className="text-xl font-bold text-white">Dashboard</h1>
+        <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
+        <p className="text-green-400 text-sm mt-1">System Administration Panel</p>
       </div>
 
       {/* Scrollable Content */}
@@ -125,7 +135,7 @@ const Dashboard = () => {
             />
             <StatCard 
               title="Total Revenue" 
-              value={`₹${stats.totalRevenue}`} 
+              value={`$${stats.totalRevenue}`} 
               icon={<FaMoneyBillWave className="text-green-400" />}
               color="green"
             />
@@ -141,6 +151,7 @@ const Dashboard = () => {
                 icon={action.icon}
                 onClick={() => navigate(action.path)}
                 bgColor={action.color}
+                isAdmin={action.title === "Cron Jobs"}
               />
             ))}
           </div>
@@ -211,18 +222,25 @@ const StatCard = ({ title, value, icon, color }) => {
   );
 };
 
-// Quick Action Card Component - Compact
-const QuickActionCard = ({ title, description, icon, onClick, bgColor }) => {
+// Quick Action Card Component - Compact (Updated)
+const QuickActionCard = ({ title, description, icon, onClick, bgColor, isAdmin }) => {
   return (
     <div 
       onClick={onClick}
-      className={`bg-gradient-to-r ${bgColor} rounded-lg p-4 cursor-pointer hover:scale-102 transition-all duration-200 shadow border border-gray-700 hover:shadow-md`}
+      className={`bg-gradient-to-r ${bgColor} rounded-lg p-4 cursor-pointer hover:scale-102 transition-all duration-200 shadow border border-gray-700 hover:shadow-md relative ${
+        isAdmin ? 'ring-2 ring-orange-400 ring-opacity-50' : ''
+      }`}
     >
+      {isAdmin && (
+        <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+          SYSTEM
+        </div>
+      )}
       <div className="flex items-center gap-3">
         <div className="p-2 bg-white/20 rounded-md text-white">
           {icon}
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h3 className="text-white font-bold text-base truncate">{title}</h3>
           <p className="text-white/80 text-xs mt-0.5 truncate">{description}</p>
         </div>
